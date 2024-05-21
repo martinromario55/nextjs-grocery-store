@@ -1,3 +1,4 @@
+'use client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,9 +10,34 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { LayoutGrid, Search, ShoppingBag } from 'lucide-react'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import GlobalApi from '../_utils/GlobalApi'
 
 function Header() {
+  const [categoryList, setCategoryList] = useState([])
+  const getCategoryList = () => {
+    GlobalApi.getCategory().then(res => {
+      //   console.log(res.data.data)
+      setCategoryList(res.data.data)
+    })
+  }
+
+  useEffect(() => {
+    getCategoryList()
+  }, [])
+
+  //   console.log(
+  //     'Image:',
+  //     process.env.NEXT_PUBLIC_BACKEND_BASE_URL + categoryList[0]
+  //   )
+
+  //   categoryList.map(category => {
+  //     console.log(
+  //       'Category',
+  //       category?.attributes?.icon?.data[0]?.attributes?.url
+  //     )
+  //   })
+
   return (
     <div className="p-5 shadow-sm flex justify-between">
       <div className="flex items-center gap-8">
@@ -27,10 +53,24 @@ function Header() {
           <DropdownMenuContent>
             <DropdownMenuLabel>Browse Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            {categoryList.map((category, index) => (
+              <DropdownMenuItem
+                key={category?.attributes?.id}
+                className="flex gap-2 items-center cursor-pointer"
+              >
+                <Image
+                  src={
+                    process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                    category?.attributes?.icon?.data[0]?.attributes?.url
+                  }
+                  unoptimized={true}
+                  alt="icon"
+                  width={30}
+                  height={30}
+                />
+                <h2 className="text-lg">{category?.attributes?.name}</h2>
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
