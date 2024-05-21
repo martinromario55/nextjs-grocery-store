@@ -4,8 +4,7 @@ import React from 'react'
 const Home = () => {
   return (
     <div>
-      <h1>Project</h1>
-      <Button variant={'secondary'}>Click</Button>
+      <h1>Home</h1>
     </div>
   )
 }
