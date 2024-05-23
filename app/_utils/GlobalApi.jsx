@@ -25,10 +25,25 @@ const getAllProducts = () =>
     return res.data.data
   })
 
+const registerUser = (username, email, password) =>
+  axiosClient.post('/auth/local/register', {
+    username,
+    email,
+    password,
+  })
+
+const signInUser = (email, password) =>
+  axiosClient.post('/auth/local', {
+    identifier: email,
+    password,
+  })
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getCategory,
   getSliders,
   getCategoryList,
   getAllProducts,
+  registerUser,
+  signInUser,
 }
