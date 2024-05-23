@@ -20,9 +20,15 @@ const getCategoryList = () =>
     return res.data.data
   })
 
+const getAllProducts = () =>
+  axiosClient.get('/products?populate=*').then(res => {
+    return res.data.data
+  })
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getCategory,
   getSliders,
   getCategoryList,
+  getAllProducts,
 }
