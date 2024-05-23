@@ -1,6 +1,15 @@
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import Image from 'next/image'
 import React from 'react'
+import ProductItemDetail from './ProductItemDetail'
 
 const ProductItem = ({ product }) => {
   //   console.log('Product:', product)
@@ -27,12 +36,24 @@ const ProductItem = ({ product }) => {
           </h2>
         )}
       </div>
-      <Button
-        variant="outline"
-        className="text-emerald-500 hover:text-white hover:bg-emerald-700"
-      >
-        Add to cart
-      </Button>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="text-emerald-500 hover:text-white hover:bg-emerald-700"
+          >
+            Add to cart
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogDescription>
+              <ProductItemDetail product={product} />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
