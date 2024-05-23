@@ -5,7 +5,7 @@ import React from 'react'
 const ProductItem = ({ product }) => {
   //   console.log('Product:', product)
   return (
-    <div className="flex flex-col items-center justify-center gap-3 p-2 md:p-6 rounded-lg cursor-pointer border hover:scale-110 hover:shadow-md transition-all ease-in-out cursor-pointer">
+    <div className="flex flex-col items-center justify-center gap-3 p-2 md:p-6 rounded-lg cursor-pointer border hover:scale-110 hover:shadow-md transition-all ease-in-out">
       <Image
         src={
           process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
