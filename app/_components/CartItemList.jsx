@@ -5,16 +5,6 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 
 const CartItemList = ({ cartItemList, onDeleteItem }) => {
-  const [subTotal, setSubTotal] = useState(0)
-  // console.log(cartItemList)
-
-  useEffect(() => {
-    let total = 0
-    cartItemList.forEach(item => {
-      total += item.amount
-    })
-    setSubTotal(total)
-  }, [cartItemList])
   return (
     <div>
       <div className="h-[700px] overflow-auto">
@@ -41,12 +31,6 @@ const CartItemList = ({ cartItemList, onDeleteItem }) => {
             </div>
           </div>
         ))}
-      </div>
-      <div className="absolute w-[90%] bottom-6 flex flex-col">
-        <h2 className="text-lg font-bold flex justify-between">
-          Subtotal <span>$ {subTotal}.00</span>
-        </h2>
-        <Button>View Cart</Button>
       </div>
     </div>
   )

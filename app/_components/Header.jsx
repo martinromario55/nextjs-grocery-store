@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation'
 import { UpdateCartContext } from '../_context/updateCartContext'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -75,7 +76,7 @@ function Header() {
 
   // Get Total Cart Item
   const getCartItems = () => {
-    GlobalApi.getCartItems(user.id, jwt).then(res => {
+    GlobalApi.getCartItems(user?.id, jwt).then(res => {
       setTotalCartItem(res.length)
       // console.log(res)
       setCartItemList(res)
@@ -88,6 +89,17 @@ function Header() {
       getCartItems()
     })
   }
+
+  const [subTotal, setSubTotal] = useState(0)
+  // console.log(cartItemList)
+
+  useEffect(() => {
+    let total = 0
+    cartItemList.forEach(item => {
+      total += item.amount
+    })
+    setSubTotal(total)
+  }, [cartItemList])
 
   return (
     <div className="p-5 shadow-sm flex justify-between">
@@ -153,6 +165,18 @@ function Header() {
                 />
               </SheetDescription>
             </SheetHeader>
+            <SheetClose asChild>
+              <div className="absolute w-[90%] bottom-6 flex flex-col">
+                <h2 className="text-lg font-bold flex justify-between">
+                  Subtotal <span>$ {subTotal}.00</span>
+                </h2>
+                <Button
+                  onClick={() => router.push(jwt ? '/checkout' : '/sign-in')}
+                >
+                  Checkout
+                </Button>
+              </div>
+            </SheetClose>
           </SheetContent>
         </Sheet>
         {!isLoggedIn ? (
