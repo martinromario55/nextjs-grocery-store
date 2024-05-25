@@ -20,13 +20,26 @@ import GlobalApi from '../_utils/GlobalApi'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { UpdateCartContext } from '../_context/updateCartContext'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import CartItemList from './CartItemList'
+import { toast } from 'sonner'
 
 function Header() {
+  const jwt = sessionStorage.getItem('jwt')
+  const user = JSON.parse(sessionStorage.getItem('user'))
   const [categoryList, setCategoryList] = useState([])
   // const isLoggedIn = sessionStorage.getItem('jwt') ? true : false
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [totalCartItem, setTotalCartItem] = useState(0)
   const { updateCart, setUpdateCart } = useContext(UpdateCartContext)
+  const [cartItemList, setCartItemList] = useState([])
 
   const router = useRouter()
 
@@ -45,7 +58,7 @@ function Header() {
   }, [])
 
   useEffect(() => {
-    getTotalCartItems()
+    getCartItems()
   }, [updateCart])
 
   useEffect(() => {
@@ -61,12 +74,18 @@ function Header() {
   }
 
   // Get Total Cart Item
-  const getTotalCartItems = () => {
-    const jwt = sessionStorage.getItem('jwt')
-    const user = JSON.parse(sessionStorage.getItem('user'))
+  const getCartItems = () => {
     GlobalApi.getCartItems(user.id, jwt).then(res => {
       setTotalCartItem(res.length)
       // console.log(res)
+      setCartItemList(res)
+    })
+  }
+
+  const onDeleteItem = id => {
+    GlobalApi.deleteCartItem(id, jwt).then(resp => {
+      toast('Item removed!')
+      getCartItems()
     })
   }
 
@@ -87,7 +106,7 @@ function Header() {
             <DropdownMenuSeparator />
             {categoryList.map((category, index) => (
               <DropdownMenuItem
-                key={category?.attributes?.id}
+                key={index}
                 className="flex gap-2 items-center cursor-pointer"
               >
                 <Image
@@ -113,12 +132,29 @@ function Header() {
       </div>
 
       <div className="flex gap-5 items-center">
-        <h2 className="flex gap-2 items-center text-lg">
-          <ShoppingBasket className="h-7 w-7" />{' '}
-          <span className="bg-emerald-500 text-white px-2 rounded-full">
-            {totalCartItem}
-          </span>
-        </h2>
+        <Sheet>
+          <SheetTrigger>
+            <h2 className="flex gap-2 items-center text-lg">
+              <ShoppingBasket className="h-7 w-7" />{' '}
+              <span className="bg-emerald-500 text-white px-2 rounded-full">
+                {totalCartItem}
+              </span>
+            </h2>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle className="bg-emerald-500 text-white font-bold text-lg p-2">
+                My Cart
+              </SheetTitle>
+              <SheetDescription>
+                <CartItemList
+                  cartItemList={cartItemList}
+                  onDeleteItem={onDeleteItem}
+                />
+              </SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
         {!isLoggedIn ? (
           <Button>
             {' '}

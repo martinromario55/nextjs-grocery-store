@@ -47,18 +47,41 @@ const addToCart = (data, jwt) =>
 
 const getCartItems = (userId, jwt) =>
   axiosClient
-    .get(`/user-carts?filters[userId][$eq]=${userId}&populate=*`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    })
+    .get(
+      `/user-carts?filters[userId][$eq]=${userId}&[populate][products][populate][images][populate][0]=url`,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    )
     .then(resp => {
-      return resp.data.data
+      const data = resp.data.data
+
+      const cartItemList = data.map((item, index) => ({
+        id: item.id,
+        name: item.attributes.products?.data[0].attributes.name,
+        quantity: item.attributes.quantity,
+        amount: item.attributes.amount,
+        image:
+          item.attributes.products?.data[0].attributes.images?.data[0]
+            .attributes.url,
+        actualPrice: item.attributes.products?.data[0].attributes.sellingPrice,
+      }))
+
+      return cartItemList
     })
     .catch(error => {
       console.log(error)
       throw new Error('Something went wrong!')
     })
+
+const deleteCartItem = (id, jwt) =>
+  axiosClient.delete(`/user-carts/${id}`, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  })
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -70,4 +93,5 @@ export default {
   signInUser,
   addToCart,
   getCartItems,
+  deleteCartItem,
 }
