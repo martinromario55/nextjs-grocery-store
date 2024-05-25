@@ -38,6 +38,28 @@ const signInUser = (email, password) =>
     password,
   })
 
+const addToCart = (data, jwt) =>
+  axiosClient.post('/user-carts', data, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  })
+
+const getCartItems = (userId, jwt) =>
+  axiosClient
+    .get(`/user-carts?filters[userId][$eq]=${userId}&populate=*`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
+    .then(resp => {
+      return resp.data.data
+    })
+    .catch(error => {
+      console.log(error)
+      throw new Error('Something went wrong!')
+    })
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   getCategory,
@@ -46,4 +68,6 @@ export default {
   getAllProducts,
   registerUser,
   signInUser,
+  addToCart,
+  getCartItems,
 }

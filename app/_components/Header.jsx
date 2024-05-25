@@ -8,16 +8,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { CircleUserRound, LayoutGrid, Search, ShoppingBag } from 'lucide-react'
+import {
+  CircleUserRound,
+  LayoutGrid,
+  Search,
+  ShoppingBasket,
+} from 'lucide-react'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import GlobalApi from '../_utils/GlobalApi'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { UpdateCartContext } from '../_context/updateCartContext'
 
 function Header() {
   const [categoryList, setCategoryList] = useState([])
-  const isLoggedIn = sessionStorage.getItem('jwt') ? true : false
+  // const isLoggedIn = sessionStorage.getItem('jwt') ? true : false
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [totalCartItem, setTotalCartItem] = useState(0)
+  const { updateCart, setUpdateCart } = useContext(UpdateCartContext)
+
   const router = useRouter()
 
   const getCategoryList = () => {
@@ -26,6 +36,17 @@ function Header() {
       setCategoryList(res.data.data)
     })
   }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const loggedIn = sessionStorage.getItem('jwt') ? true : false
+      setIsLoggedIn(loggedIn)
+    }
+  }, [])
+
+  useEffect(() => {
+    getTotalCartItems()
+  }, [updateCart])
 
   useEffect(() => {
     getCategoryList()
@@ -37,6 +58,16 @@ function Header() {
 
     // forward to login page
     router.push('/sign-in')
+  }
+
+  // Get Total Cart Item
+  const getTotalCartItems = () => {
+    const jwt = sessionStorage.getItem('jwt')
+    const user = JSON.parse(sessionStorage.getItem('user'))
+    GlobalApi.getCartItems(user.id, jwt).then(res => {
+      setTotalCartItem(res.length)
+      // console.log(res)
+    })
   }
 
   return (
@@ -83,7 +114,10 @@ function Header() {
 
       <div className="flex gap-5 items-center">
         <h2 className="flex gap-2 items-center text-lg">
-          <ShoppingBag /> 0
+          <ShoppingBasket className="h-7 w-7" />{' '}
+          <span className="bg-emerald-500 text-white px-2 rounded-full">
+            {totalCartItem}
+          </span>
         </h2>
         {!isLoggedIn ? (
           <Button>
@@ -102,7 +136,7 @@ function Header() {
               <DropdownMenuItem>My Orders</DropdownMenuItem>
               <DropdownMenuItem>My Items</DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onSignOut()}
+                onClick={() => onSignOut}
                 className="text-lg font-semibold"
               >
                 Logout

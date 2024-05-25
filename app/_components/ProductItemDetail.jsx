@@ -1,15 +1,59 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { ShoppingBasket } from 'lucide-react'
+import { LoaderIcon, ShoppingBasket } from 'lucide-react'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useContext, useState } from 'react'
+import GlobalApi from '../_utils/GlobalApi'
+import { toast } from 'sonner'
+import { UpdateCartContext } from '../_context/updateCartContext'
 
 const ProductItemDetail = ({ product }) => {
+  const jwt = sessionStorage.getItem('jwt')
+  const router = useRouter()
+  const user = JSON.parse(sessionStorage.getItem('user'))
+  const [loading, setLoading] = useState(false)
+  const { updateCart, setUpdateCart } = useContext(UpdateCartContext)
   const [productTotalPrice, setProductTotalPrice] = useState(
     product.attributes.sellingPrice
   )
 
   const [quantity, setQuantity] = useState(1)
+
+  const addToCart = () => {
+    setLoading(true)
+    // check if user is authenticated
+    if (!jwt) {
+      router.push('/sign-in')
+      setLoading(false)
+      return
+    }
+
+    const data = {
+      data: {
+        quantity,
+        amount: productTotalPrice * quantity,
+        products: product.id,
+        users_permissions_users: user.id,
+        userId: user.id,
+      },
+    }
+
+    // console.log(data)
+    GlobalApi.addToCart(data, jwt).then(
+      resp => {
+        // console.log(resp.data)
+        toast('Product added to cart!')
+        setUpdateCart(!updateCart)
+        setLoading(false)
+      },
+      e => {
+        toast('Error while adding to cart')
+        setLoading(false)
+      }
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 p-7 bg-white text-black">
       <Image
@@ -51,12 +95,16 @@ const ProductItemDetail = ({ product }) => {
               <button onClick={() => setQuantity(quantity + 1)}>+</button>
             </div>
             <h2 className="text-2xl font-bold">
-              = ${quantity * productTotalPrice}
+              = ${quantity * productTotalPrice}.00
             </h2>
           </div>
-          <Button className="flex gap-3 bg-emerald-500 hover:bg-emerald-800">
+          <Button
+            className="flex gap-3 bg-emerald-500 hover:bg-emerald-800"
+            onClick={() => addToCart()}
+            disabled={loading}
+          >
             <ShoppingBasket />
-            Add To Cart
+            {loading ? <LoaderIcon className="animate-ping" /> : 'Add To Cart'}
           </Button>
         </div>
         <h2 className="text-lg">
