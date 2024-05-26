@@ -2,6 +2,7 @@
 import GlobalApi from '@/app/_utils/GlobalApi'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PayPalButtons } from '@paypal/react-paypal-js'
 import { ArrowBigRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -88,7 +89,7 @@ const Checkout = () => {
             Total Cart ({totalCartItem})
           </h2>
 
-          <div className="p-3 flex flex-col gap-4">
+          <div className="p-4 flex flex-col gap-4">
             <h2 className="font-bold flex justify-between">
               Subtotal: <span>$ {subTotal}.00</span>
             </h2>
@@ -103,9 +104,10 @@ const Checkout = () => {
             <h2 className="flex justify-between font-bold">
               Total: <span>$ {calculateTotalAmount()}</span>
             </h2>
-            <Button>
+            {/* <Button>
               Payment <ArrowBigRight />
-            </Button>
+            </Button> */}
+            <PayPalButtons style={{ layout: 'vertical' }} />
           </div>
         </div>
       </div>

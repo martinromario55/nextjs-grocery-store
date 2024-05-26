@@ -77,9 +77,11 @@ function Header() {
   // Get Total Cart Item
   const getCartItems = () => {
     GlobalApi.getCartItems(user?.id, jwt).then(res => {
-      setTotalCartItem(res.length)
       // console.log(res)
-      setCartItemList(res)
+      if (res) {
+        setTotalCartItem(res.length)
+        setCartItemList(res)
+      }
     })
   }
 

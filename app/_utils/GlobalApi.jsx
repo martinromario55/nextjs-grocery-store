@@ -73,7 +73,6 @@ const getCartItems = (userId, jwt) =>
     })
     .catch(error => {
       console.log(error)
-      throw new Error('Something went wrong!')
     })
 
 const deleteCartItem = (id, jwt) =>
